@@ -6,6 +6,7 @@ Created on Wed Sep 18 14:25:03 2019
 """
 
 import scipy.io
+import scipy.stats
 import numpy as np
 import matplotlib.pyplot as PLOT
 from mpl_toolkits.mplot3d import Axes3D
@@ -19,33 +20,23 @@ X1 = data[0]
 X2 = data[1]
 X3 = data[2]
 
-Y1 = (X1,X2)
-Y2 = (X2,X3)
-Y3 = (X3,X1)
+n = 20
 
-fig = PLOT.figure()
-#fig.suptitle(title)
-ax = fig.add_subplot(111, projection='3d')
-(x, y) = Y1
-hist, xedges, yedges = np.histogram2d(x, y, bins=25, range=[[min(Y1[0]), max(Y1[0])], [min(Y1[1]), max(Y1[1])]])
-xpos, ypos = np.meshgrid(xedges[:-1] + 0.25, yedges[:-1] + 0.25, indexing="ij")
-xpos = xpos.ravel()
-ypos = ypos.ravel()
-zpos = 0
-dx = dy = 0.5 * np.ones_like(zpos)
-dz = hist.ravel()
 
-ax.bar3d(xpos, ypos, zpos, dx, dy, dz, zsort='average')
+
+
+
+for X in [X1,X2,X3] :
+    
+    final = [X[i * n:(i + 1) * n] for i in range((len(X) + n - 1) // n )]  
+    total_entropy = []
+    for i in range(0,len(final)-1):
+        entropy = scipy.stats.entropy(final[i],final[i+1])
+        total_entropy.append(entropy)
+        
+    PLOT.plot(total_entropy)
+
+    print("max value at : ", total_entropy.index(max(total_entropy)), " : ", max(total_entropy))
 PLOT.show()
 
-# Construct arrays for the anchor positions of the 16 bars.
-#xpos, ypos = np.meshgrid(xedges[:-1] + 0.25, yedges[:-1] + 0.25, indexing="ij")
-#xpos = xpos.ravel()
-#ypos = ypos.ravel()
-#zpos = 0
 
-# Construct arrays with the dimensions for the 16 bars.
-#dx = dy = 0.5 * np.ones_like(zpos)
-#dz = hist.ravel()
-#
-#ax.bar3d(xpos, ypos, zpos, dx, dy, dz, zsort='average')
